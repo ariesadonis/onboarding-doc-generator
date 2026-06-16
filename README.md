@@ -63,6 +63,8 @@ The generated doc includes:
 
 Early CLI prototype — repo in, markdown out. No web UI, no CI integration, no auto-update on a schedule yet. Feedback on what it gets wrong is the main thing I'm looking for right now.
 
+Free to try during this beta while I validate the idea. No license is granted for redistribution or commercial reuse — this is heading toward a paid product (see [Issues](../../issues) or open one if you want to be notified, or just tell me directly).
+
 ## Tests
 
 ```bash
