@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from parsers import (
@@ -61,6 +62,7 @@ def test_parse_env_setup_malformed_compose_file(tmp_path: Path):
 
 
 def test_detect_start_command_node_start_script(tmp_path: Path):
+    (tmp_path / "package.json").write_text(json.dumps({"scripts": {"start": "node index.js"}}))
     deps = {"node": {"scripts": {"start": "node index.js"}}}
     assert detect_start_command(tmp_path, deps) == "npm run start"
 
