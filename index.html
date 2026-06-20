@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevDocs — Auto-generate setup docs from your repo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e8e8e8;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+    .logo { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; color: #fff; }
+    .logo span { color: #4f8ef7; }
+    nav a.cta-small {
+      background: #4f8ef7;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 100px 24px 80px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      background: #1a2a1a;
+      color: #4caf76;
+      border: 1px solid #2a4a2a;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 28px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    h1 em { color: #4f8ef7; font-style: normal; }
+    .hero p {
+      font-size: 1.15rem;
+      color: #999;
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: #4f8ef7;
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .hero-sub {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: #666;
+    }
+
+    /* PROBLEM */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 72px 24px;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #4f8ef7;
+      margin-bottom: 14px;
+    }
+    .section h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+    .section p { color: #999; font-size: 1.05rem; max-width: 600px; }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .pain-card {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 22px 20px;
+    }
+    .pain-card .icon { font-size: 1.4rem; margin-bottom: 10px; }
+    .pain-card h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .pain-card p { font-size: 0.85rem; color: #777; }
+
+    /* HOW IT WORKS */
+    .how { background: #0a0a0a; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+      margin-top: 40px;
+    }
+    .step { position: relative; }
+    .step-num {
+      width: 32px; height: 32px;
+      background: #4f8ef7;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 800; color: #fff;
+      margin-bottom: 14px;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .step p { font-size: 0.88rem; color: #777; }
+
+    /* EXAMPLE OUTPUT */
+    .output-wrap {
+      margin-top: 40px;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .output-bar {
+      background: #181818;
+      border-bottom: 1px solid #222;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+    .output-filename { font-size: 0.78rem; color: #555; margin-left: 8px; }
+    .output-body {
+      padding: 24px 28px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: #c9d1d9;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    .output-body .h1 { color: #fff; font-weight: 700; font-size: 1rem; }
+    .output-body .h2 { color: #79b8ff; font-weight: 700; }
+    .output-body .key { color: #85e89d; }
+    .output-body .comment { color: #666; }
+    .output-body .bullet { color: #f97583; }
+
+    /* WAITLIST */
+    .waitlist { background: #0a0a0a; border-top: 1px solid #1a1a1a; }
+    .waitlist-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .waitlist-inner h2 { font-size: 1.9rem; font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .waitlist-inner p { color: #777; font-size: 1rem; margin-bottom: 36px; }
+
+    .form-embed {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      display: block;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 0.8rem;
+      color: #444;
+      border-top: 1px solid #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">Dev<span>Docs</span></div>
+    <a href="#waitlist" class="cta-small">Join waitlist</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="badge">Early access — free during beta</div>
+    <h1>Stop writing setup docs.<br><em>Generate them from your repo.</em></h1>
+    <p>DevDocs reads your actual config files — package.json, docker-compose, .env.example — and produces a setup guide that stays accurate automatically.</p>
+    <a href="#waitlist" class="hero-cta">Get early access</a>
+    <span class="hero-sub">No credit card. No spam. Just the tool.</span>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section">
+    <div class="section-label">The problem</div>
+    <h2>New engineer joins. Setup docs are 3 months out of date.</h2>
+    <p>Every team has this. Someone adds an env var, swaps a service, changes the Node version — and the doc doesn't know. The new hire loses 2 days to a problem that shouldn't exist.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="icon">⏱</div>
+        <h3>2–3 days lost per hire</h3>
+        <p>Just getting a working local environment before writing a single line of code.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🔑</div>
+        <h3>Half the env vars undocumented</h3>
+        <p>Scattered across .env files in subdirectories no one thinks to check.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">🏚</div>
+        <h3>Docs decay immediately</h3>
+        <p>No PR gate enforces updates. Config changes silently break the guide.</p>
+      </div>
+      <div class="pain-card">
+        <div class="icon">👻</div>
+        <h3>No one owns it</h3>
+        <p>Everyone assumes someone else is keeping it current. Nobody is.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="section">
+      <div class="section-label">How it works</div>
+      <h2>Point it at a repo. Get a setup doc.</h2>
+      <p>No configuration. No templates to fill in. DevDocs reads what's actually there.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Point at your repo</h3>
+          <p>Run the CLI on any local or remote repo. Works with monorepos.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>It scans the config</h3>
+          <p>Reads package.json, docker-compose, .env.example, runtime files — across all packages.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Get a ready-to-use doc</h3>
+          <p>A clean markdown setup guide, accurate to what's actually in the codebase right now.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAMPLE -->
+  <section class="section">
+    <div class="section-label">Real output</div>
+    <h2>Ran it on Medusa — a 200+ package monorepo.</h2>
+    <p>Detected 24 env vars across 6 nested .env.example files, 12 per-package start commands, and the correct Node runtime version. In seconds.</p>
+
+    <div class="output-wrap">
+      <div class="output-bar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="output-filename">medusa-onboarding.md</span>
+      </div>
+      <div class="output-body"><span class="h1"># medusa — Onboarding Guide</span>
+
+<span class="h2">## Prerequisites</span>
+- Language: JavaScript/Node.js (monorepo)
+- Node version: <span class="key">20.x</span> (via .nvmrc)
+- Docker required
+
+<span class="h2">## Environment Setup</span>
+Copy <span class="key">.env.example</span> to <span class="key">.env</span> and fill in:
+
+<span class="bullet">  NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY</span>
+<span class="bullet">  DATABASE_URL</span>
+<span class="bullet">  REDIS_URL</span>
+<span class="bullet">  STRIPE_API_KEY</span>
+<span class="bullet">  SENDGRID_API_KEY</span>
+<span class="bullet">  NEXT_PUBLIC_BASE_URL</span>
+<span class="comment">  ... 18 more vars detected across 6 packages</span>
+
+<span class="h2">## Start Commands</span>
+<span class="key">npm run dev</span>  <span class="comment"># @medusajs/dashboard</span>
+<span class="key">npm run dev</span>  <span class="comment"># @medusajs/backend</span>
+<span class="key">npm run dev</span>  <span class="comment"># create-medusa-app</span>
+<span class="comment">  ... 9 more packages</span>
+
+<span class="h2">## Services (docker-compose)</span>
+- postgres
+- redis</div>
+    </div>
+  </section>
+
+  <!-- WAITLIST -->
+  <section class="waitlist" id="waitlist">
+    <div class="waitlist-inner">
+      <h2>Get early access</h2>
+      <p>Free during beta. Be the first to try it on your repo.</p>
+      <iframe
+        class="form-embed"
+        src="https://docs.google.com/forms/d/e/1FAIpQLSdTrh1mdqyJWAJUMyo3iPSpmEWqKljb4ehc5uO9BSFeZLhwMg/viewform?embedded=true"
+        width="100%"
+        height="520"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0">
+        Loading…
+      </iframe>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>DevDocs &copy; 2026 &nbsp;·&nbsp; Built for engineering teams &nbsp;·&nbsp; samveg.singhi@icloud.com</p>
+  </footer>
+
+</body>
+</html>
