@@ -1,5 +1,10 @@
 # {{ repo_name }} — Onboarding Guide
 
+> **Trust trail** · Scanned: `{{ sources_scanned | join("`, `") }}`
+> Generated: {{ generated_at }} · Commit: `{{ commit_hash }}`
+> Reviewer: ________________ · Verified: ________________
+> Unchecked assumptions: {{ unchecked | join(", ") if unchecked else "none flagged" }}
+
 {% if readme_summary %}
 > {{ readme_summary }}
 {% endif %}

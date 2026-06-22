@@ -73,6 +73,32 @@ def get_commit_hash(repo_path: Path) -> str:
     return result.stdout.strip() if result.returncode == 0 else "unknown"
 
 
+def _collect_sources(repo_path: Path, env_setup: dict, dependencies: dict) -> list[str]:
+    sources = []
+    for name in ("package.json", "docker-compose.yml", "docker-compose.yaml", "Dockerfile",
+                 ".nvmrc", ".python-version", ".tool-versions", "requirements.txt",
+                 "Gemfile", "go.mod", "Cargo.toml", "pyproject.toml"):
+        if (repo_path / name).exists():
+            sources.append(name)
+    env_example_count = sum(
+        1 for p in repo_path.rglob(".env.example") if ".git" not in p.parts
+    )
+    if env_example_count:
+        label = ".env.example" if env_example_count == 1 else f".env.example ×{env_example_count}"
+        sources.append(label)
+    return sources or ["no recognized config files found"]
+
+
+def _collect_unchecked(env_setup: dict) -> list[str]:
+    sensitive_prefixes = ("DATABASE_URL", "REDIS_URL", "STRIPE_", "SENDGRID_",
+                          "SECRET", "PASSWORD", "TOKEN", "KEY", "PRIVATE", "WEBHOOK")
+    unchecked = []
+    for var in env_setup.get("env_vars", []):
+        if any(var.upper().startswith(p) or p in var.upper() for p in sensitive_prefixes):
+            unchecked.append(f"`{var}`")
+    return unchecked[:6]
+
+
 def generate_doc(repo_path: Path, repo_name: str) -> str:
     languages = detect_languages(repo_path)
     dependencies = parse_dependencies(repo_path)
@@ -80,6 +106,8 @@ def generate_doc(repo_path: Path, repo_name: str) -> str:
     start_command = detect_start_command(repo_path, dependencies)
     readme_summary = get_readme_summary(repo_path)
     commit_hash = get_commit_hash(repo_path)
+    sources_scanned = _collect_sources(repo_path, env_setup, dependencies)
+    unchecked = _collect_unchecked(env_setup)
 
     env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
     template = env.get_template("onboarding.md.j2")
@@ -93,6 +121,8 @@ def generate_doc(repo_path: Path, repo_name: str) -> str:
         readme_summary=readme_summary,
         commit_hash=commit_hash,
         generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        sources_scanned=sources_scanned,
+        unchecked=unchecked,
     )
 
 

@@ -1,17 +1,17 @@
-# Rocket — Onboarding Guide
+# medusa — Onboarding Guide
+
+> **Trust trail** · Scanned: `package.json`, `.env.example ×4`
+> Generated: 2026-06-22 11:24 UTC · Commit: `c091d262`
+> Reviewer: ________________ · Verified: ________________
+> Unchecked assumptions: `NEXT_PUBLIC_SEGMENT_API_KEY`, `NEXT_PUBLIC_ALGOLIA_API_KEY`, `ALGOLIA_WRITE_API_KEY`, `NEXT_PUBLIC_POSTHOG_KEY`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
 
 
-> <p align="center"> 
-  <img  src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400" />
-</p>
-
-<h1 align="center">
-  The ultimate secure open-source solution for team communications
-</h1>
-
-<p align="center">
-  <img src="https://img.shields.io/github/v/release/RocketChat/Rocket.Chat?label=version">
-  <img src="https://...
+> <p align="center">
+  <a href="https://www.medusajs.com">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
+    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4...
 
 
 ## Prerequisites
@@ -22,10 +22,6 @@
 
 
 
-- Tool versions (asdf): deno 2.3.1
-
-
-- Docker required (Dockerfile present)
 
 
 
@@ -34,7 +30,65 @@
 
 Copy `.env.example` to `.env` and fill in the following variables:
 
-- `ENTERPRISE_LICENSE_RC1`
+- `NEXT_PUBLIC_ENV`
+
+- `NEXT_PUBLIC_BASE_URL`
+
+- `NEXT_PUBLIC_BASE_PATH`
+
+- `ANALYZE_BUNDLE`
+
+- `NEXT_PUBLIC_MEDUSA_DOCS_BASE_URL`
+
+- `NEXT_PUBLIC_SEGMENT_API_KEY`
+
+- `NEXT_PUBLIC_DOCS_ALGOLIA_INDEX_NAME`
+
+- `NEXT_PUBLIC_API_ALGOLIA_INDEX_NAME`
+
+- `NEXT_PUBLIC_ALGOLIA_API_KEY`
+
+- `NEXT_PUBLIC_ALGOLIA_APP_ID`
+
+- `NEXT_PUBLIC_DOCS_URL`
+
+- `NEXT_PUBLIC_RESOURCES_URL`
+
+- `NEXT_PUBLIC_UI_URL`
+
+- `NEXT_PUBLIC_API_URL`
+
+- `NEXT_PUBLIC_USER_GUIDE_URL`
+
+- `ALGOLIA_WRITE_API_KEY`
+
+- `CLOUDINARY_CLOUD_NAME`
+
+- `NEXT_PUBLIC_GA_ID`
+
+- `NEXT_PUBLIC_INTEGRATION_ID`
+
+- `NEXT_PUBLIC_REO_DEV_CLIENT_ID`
+
+- `NEXT_PUBLIC_POSTHOG_KEY`
+
+- `NEXT_PUBLIC_POSTHOG_HOST`
+
+- `NEXT_PUBLIC_ALGOLIA_SITE_VERIFICATION`
+
+- `NEXT_PUBLIC_BLOOM_URL`
+
+- `UI_SPECS_R2_BASE_URL`
+
+- `CLOUDFLARE_ACCOUNT_ID`
+
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`
+
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+
+- `R2_BUCKET_NAME`
+
+- `NEXT_PUBLIC_CLOUD_URL`
 
 
 
@@ -48,7 +102,7 @@ Copy `.env.example` to `.env` and fill in the following variables:
 npm install
 ```
 
-Key dependencies: @types/stream-buffers, node-gyp
+Key dependencies: @changesets/changelog-github, @changesets/cli, import-from
 
 
 
@@ -57,57 +111,20 @@ Key dependencies: @types/stream-buffers, node-gyp
 
 
 ```
-npm run dev
-npm run dev  # @rocket.chat/meteor
-npm run dev  # @rocket.chat/uikit-playground
-npm run dev  # @rocket.chat/abac
-npm run dev  # @rocket.chat/federation-matrix
-npm run dev  # @rocket.chat/license
-npm run dev  # @rocket.chat/media-calls
-npm run dev  # @rocket.chat/omni-core-ee
-npm run dev  # @rocket.chat/omnichannel-services
-npm run dev  # @rocket.chat/pdf-worker
-npm run dev  # @rocket.chat/account-utils
-npm run dev  # @rocket.chat/api-client
-npm run dev  # @rocket.chat/apps
-npm run dev  # @rocket.chat/apps-engine
-npm run dev  # @rocket.chat/base64
-npm run dev  # @rocket.chat/cas-validate
-npm run dev  # @rocket.chat/core-services
-npm run dev  # @rocket.chat/core-typings
-npm run dev  # @rocket.chat/cron
-npm run dev  # @rocket.chat/ddp-client
-npm run dev  # @rocket.chat/favicon
-npm run dev  # @rocket.chat/fuselage-ui-kit
-npm run dev  # @rocket.chat/gazzodown
-npm run dev  # @rocket.chat/http-router
-npm run dev  # @rocket.chat/instance-status
-npm run dev  # @rocket.chat/jwt
-npm run dev  # @rocket.chat/livechat
-npm run dev  # @rocket.chat/log-format
-npm run dev  # @rocket.chat/logger
-npm run dev  # @rocket.chat/media-signaling
-npm run dev  # @rocket.chat/mock-providers
-npm run dev  # @rocket.chat/models
-npm run dev  # @rocket.chat/mongo-adapter
-npm run dev  # @rocket.chat/omni-core
-npm run dev  # @rocket.chat/password-policies
-npm run dev  # @rocket.chat/patch-injection
-npm run dev  # @rocket.chat/random
-npm run dev  # @rocket.chat/rest-typings
-npm run dev  # @rocket.chat/server-cloud-communication
-npm run dev  # @rocket.chat/server-fetch
-npm run dev  # @rocket.chat/sha256
-npm run dev  # @rocket.chat/storybook-config
-npm run dev  # @rocket.chat/tools
-npm run dev  # @rocket.chat/tracing
-npm run dev  # @rocket.chat/ui-avatar
-npm run dev  # @rocket.chat/ui-client
-npm run dev  # @rocket.chat/ui-composer
-npm run dev  # @rocket.chat/ui-contexts
-npm run dev  # @rocket.chat/ui-video-conf
-npm run dev  # @rocket.chat/ui-voip
-npm run dev  # @rocket.chat/web-ui-registration
+npm run dev  # @medusajs/dashboard
+npm run dev  # create-medusa-app
+npm run start  # @medusajs/telemetry
+npm run dev  # @medusajs/draft-order
+npm run dev  # @medusajs/loyalty-plugin
+npm run dev  # docs-root
+npm run dev  # api-reference
+npm run dev  # bloom
+npm run dev  # book
+npm run dev  # cloud
+npm run dev  # resources
+npm run dev  # ui
+npm run dev  # user-guide
+npm run dev  # docs-ui
 ```
 
 
@@ -122,5 +139,5 @@ manually:
 - [ ] Common pitfalls / "gotchas"
 
 ---
-*Generated by onboarding-doc-generator from `Rocket` @ commit `f63b965` on 2026-06-19 04:21 UTC.*
+*Generated by onboarding-doc-generator from `medusa` @ commit `c091d262` on 2026-06-22 11:24 UTC.*
 *Re-run the generator after major dependency or setup changes to keep this current.*
