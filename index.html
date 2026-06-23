@@ -24,6 +24,10 @@
       padding: 20px 48px;
       border-bottom: 1px solid #1f1f1f;
     }
+    .nav-left { display: flex; align-items: center; gap: 20px; }
+    .back-link { font-size: 0.82rem; color: #555; transition: color 0.15s; }
+    .back-link:hover { color: #aaa; }
+    .nav-divider { width: 1px; height: 16px; background: #2a2a2a; }
     .logo { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; color: #fff; }
     .logo span { color: #4f8ef7; }
     nav a.cta-small {
@@ -33,6 +37,11 @@
       border-radius: 6px;
       font-size: 0.85rem;
       font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      nav { padding: 16px 20px; }
+      .back-link { display: none; }
+      .nav-divider { display: none; }
     }
 
     /* HERO */
@@ -307,7 +316,11 @@
 
   <!-- NAV -->
   <nav>
-    <div class="logo">Dev<span>Docs</span></div>
+    <div class="nav-left">
+      <a href="https://metronometech.com" class="back-link">← Metronome</a>
+      <div class="nav-divider"></div>
+      <div class="logo">Dev<span>Docs</span></div>
+    </div>
     <a href="#waitlist" class="cta-small">Get a drift report</a>
   </nav>
 
