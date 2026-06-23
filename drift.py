@@ -235,27 +235,34 @@ def compute_drift(
             # Only flag local_required + unknown as high-confidence drift
             actionable = local_req + unknown
             if actionable:
+                # Patch shows local-required only; everything else collapsed into summary line
                 patch_lines = []
                 if local_req:
-                    patch_lines.append("**Required for local dev** — add to Environment Setup section:")
+                    patch_lines.append("Add to Environment Setup section:")
                     patch_lines += [f"- `{v}`" for v in local_req]
                 if unknown:
-                    patch_lines.append("\n**Unclassified** — verify with team whether required locally:")
-                    patch_lines += [f"- `{v}`" for v in unknown]
+                    patch_lines.append(f"\nVerify with team ({len(unknown)} unclassified vars — may also be needed locally).")
+
+                # Collapsed summary for secrets/optional/deploy so the count isn't alarming
+                suppressed = []
+                if secrets:
+                    suppressed.append(f"{len(secrets)} secrets")
                 if optional:
-                    patch_lines.append(f"\n**Optional integrations** (skip if not using): {', '.join(f'`{v}`' for v in optional)}")
+                    suppressed.append(f"{len(optional)} optional integrations")
                 if deploy:
-                    patch_lines.append(f"\n**Deployment-only** (not needed locally): {', '.join(f'`{v}`' for v in deploy)}")
+                    suppressed.append(f"{len(deploy)} deployment-only")
+                if suppressed:
+                    patch_lines.append(f"\nNot shown: {', '.join(suppressed)} — not needed for local dev.")
 
                 items.append(DriftItem(
                     category="env_vars",
                     source_implies=f"`{source_ref}` defines {len(config_vars)} vars. "
                                    f"Local-required: {', '.join(f'`{v}`' for v in local_req) or 'none detected'}. "
-                                   f"Secrets: {len(secrets)}. Optional integrations: {len(optional)}. "
-                                   f"Deployment-only: {len(deploy)}. Unclassified: {len(unknown)}.",
+                                   f"Unclassified: {len(unknown)}. "
+                                   f"(Secrets: {len(secrets)}, optional integrations: {len(optional)}, deployment-only: {len(deploy)} — collapsed.)",
                     doc_says=f"`{doc_ref}` mentions {len(doc_claims.env_vars)} var(s): "
                              + (', '.join(f'`{v}`' for v in sorted(doc_claims.env_vars)) or "none"),
-                    why_it_matters=f"{len(actionable)} var(s) likely needed for local setup are undocumented. "
+                    why_it_matters=f"{len(local_req)} var(s) required for local setup are undocumented. "
                                    "A new engineer cloning this repo will hit failures without knowing which vars are required.",
                     proposed_patch="\n".join(patch_lines),
                     confidence="high" if local_req else "medium",
@@ -327,4 +334,6 @@ def compute_drift(
 def run_drift(repo_path: Path, env_setup: dict, dependencies: dict) -> tuple[DocClaims, list[DriftItem]]:
     doc_claims = extract_doc_claims(repo_path)
     items = compute_drift(repo_path, env_setup, dependencies, doc_claims)
+    # Services conflict is the most concrete onboarding break — lead with it
+    items.sort(key=lambda x: (0 if x.category == "services" else 1, x.category))
     return doc_claims, items
