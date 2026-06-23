@@ -1,13 +1,14 @@
 # {{ repo_name }} — Drift Report
 
-> **Trust trail** · Scanned: `{{ sources_scanned | join("`, `") }}`
+> **Trust trail**
+> Config files scanned: `{{ sources_scanned | join("`, `") }}`
 > Docs checked: `{{ doc_sources | join("`, `") or "none found" }}`
 > Generated: {{ generated_at }} · Commit: `{{ commit_hash }}`
 
 {% if not drift_items %}
 No drift detected between config files and existing docs.
 {% else %}
-**{{ drift_items | length }} conflict(s) found.**
+**{{ drift_items | length }} conflict(s) found.** Lead with #1 — it is the most concrete onboarding break.
 
 ---
 {% for item in drift_items %}
@@ -19,19 +20,24 @@ No drift detected between config files and existing docs.
 **② Current doc says**
 {{ item.doc_says }}
 
-**③ Exact drift / conflict**
-{{ item.conflict }}
+**③ Why it matters**
+{{ item.why_it_matters }}
 
 **④ Proposed patch**
 {{ item.proposed_patch }}
 
 **⑤ Confidence:** {{ item.confidence | upper }}
 {% if item.unchecked %}
-**Unchecked assumptions:** {{ item.unchecked | join(", ") }} — these vars likely need real values; tool cannot verify.
+**Unchecked assumptions:**
+{% for u in item.unchecked %}
+- {{ u }}
+{% endfor %}
 {% endif %}
+
+**Reviewer action:** {{ item.reviewer_actions | join(" · ") }}
 
 ---
 {% endfor %}
 {% endif %}
 
-*Re-run with `--drift` after config changes to catch new gaps.*
+*Re-run with `--drift` after config or doc changes to catch new gaps.*
