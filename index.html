@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DevDocs — Auto-generate setup docs from your repo</title>
+  <title>DevDocs — Find where your setup docs have drifted from your repo</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -179,6 +179,7 @@
     .output-body .key { color: #85e89d; }
     .output-body .comment { color: #666; }
     .output-body .bullet { color: #f97583; }
+    .output-body .patch { color: #4caf76; }
 
     /* WAITLIST */
     .waitlist { background: #0a0a0a; border-top: 1px solid #1a1a1a; }
@@ -191,13 +192,13 @@
     .waitlist-inner h2 { font-size: 1.9rem; font-weight: 800; color: #fff; margin-bottom: 12px; letter-spacing: -0.5px; }
     .waitlist-inner p { color: #777; font-size: 1rem; margin-bottom: 36px; }
 
-    .form-embed {
-      width: 100%;
-      border: none;
-      border-radius: 10px;
-      overflow: hidden;
-      display: block;
+    .flow-line {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 32px;
+      font-family: "SF Mono", "Fira Code", monospace;
     }
+    .flow-line span { color: #4f8ef7; }
 
     /* PRICING */
     .pricing-grid {
@@ -307,23 +308,81 @@
   <!-- NAV -->
   <nav>
     <div class="logo">Dev<span>Docs</span></div>
-    <a href="#waitlist" class="cta-small">Get a report</a>
+    <a href="#waitlist" class="cta-small">Get a drift report</a>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
     <div class="badge">Done-for-you · Delivered in 24h</div>
-    <h1>Stop writing setup docs.<br><em>Generate them from your repo.</em></h1>
-    <p>DevDocs reads your actual config files — package.json, docker-compose, .env.example — and produces a setup guide that stays accurate automatically.</p>
-    <a href="#waitlist" class="hero-cta">Get a report</a>
-    <span class="hero-sub">Delivered within 24 hours. Public repos.</span>
+    <h1>Find the setup-doc drift that<br><em>breaks new engineer onboarding.</em></h1>
+    <p>Your repo owners already have docs. They don't wake up wanting new ones. They feel pain when onboarding fails because docker-compose, env vars, or start commands changed — and the README didn't.</p>
+    <a href="#waitlist" class="hero-cta">Get a setup drift report</a>
+    <span class="hero-sub">Send your repo URL. Report delivered within 24 hours.</span>
+  </section>
+
+  <!-- DRIFT EXAMPLE — immediately after hero -->
+  <section class="how">
+    <div class="section">
+      <div class="section-label">Real drift report output</div>
+      <h2>Ran it on outline — docker-compose defines postgres + redis, setup docs don't mention either.</h2>
+      <p>File:line evidence, confidence score, proposed patch, and a reviewer action per conflict. Not a generic AI rewrite — evidence-based, actionable in under 2 minutes.</p>
+
+      <div class="output-wrap">
+        <div class="output-bar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <span class="output-filename">outline-drift.md</span>
+        </div>
+        <div class="output-body"><span class="comment">> Config scanned: `package.json`, `docker-compose.yml`, `.nvmrc`, `.env.example`</span>
+<span class="comment">> Docs checked: `README.md`</span>
+<span class="comment">> Commit: `3ed1834` · Generated: 2026-06-23</span>
+
+<span class="bullet">3 conflict(s) found.</span>
+
+<span class="h2">## 1. Services  [HIGH confidence]</span>
+
+<span class="comment">① Source implies</span>
+<span class="key">`docker-compose.yml`</span> defines 2 services: <span class="key">postgres</span>, <span class="key">redis</span>
+
+<span class="comment">② Doc says</span>
+<span class="key">`README.md:25-29`</span> — <span class="bullet">no mention of docker-compose or local service startup</span>
+
+<span class="comment">③ Why it matters</span>
+Engineer clones repo, skips `docker compose up`, app fails to connect.
+Concrete onboarding break — not a cosmetic gap.
+
+<span class="comment">④ Proposed patch</span>
+<span class="patch">+ # Start required services</span>
+<span class="patch">+ docker compose up -d</span>
+<span class="patch">+ # Services: postgres, redis</span>
+
+<span class="comment">⑤ Reviewer action: Accept patch · Mark intentional · Ignore with reason</span>
+
+<span class="h2">## 2. Env Vars  [HIGH confidence]</span>
+
+<span class="comment">① Source implies</span>
+<span class="key">`.env.example`</span> defines 86 vars. Local-required: <span class="key">DATABASE_URL, REDIS_URL, PORT, NODE_ENV, URL</span> + 5 more.
+
+<span class="comment">② Doc says</span>
+<span class="key">`README.md:25-29`</span> mentions <span class="bullet">2 var(s): DEBUG, LOG_LEVEL</span>
+
+<span class="comment">③ Why it matters</span>
+10 vars required for local setup are undocumented — silent failures on first run.
+(17 secrets, 29 optional integrations, 14 deployment-only — collapsed, not needed locally.)
+
+<span class="comment">④ Proposed patch — add to Environment Setup section:</span>
+<span class="patch">+ DATABASE_URL, REDIS_URL, PORT, NODE_ENV, URL</span>
+<span class="patch">+ FILE_STORAGE, FILE_STORAGE_LOCAL_ROOT_DIR (+ 3 more)</span>
+
+<span class="comment">⑤ Reviewer action: Accept patch · Mark intentional · Ignore with reason</span></div>
+      </div>
+    </div>
   </section>
 
   <!-- PROBLEM -->
   <section class="section">
     <div class="section-label">The problem</div>
     <h2>New engineer joins. Setup docs are 3 months out of date.</h2>
-    <p>Every team has this. Someone adds an env var, swaps a service, changes the Node version — and the doc doesn't know. The new hire loses 2 days to a problem that shouldn't exist.</p>
+    <p>Someone adds an env var, swaps a service, changes the Node version — and the README doesn't know. The new hire loses 2 days to a problem that shouldn't exist.</p>
 
     <div class="pain-grid">
       <div class="pain-card">
@@ -333,8 +392,8 @@
       </div>
       <div class="pain-card">
         <div class="icon">🔑</div>
-        <h3>Half the env vars undocumented</h3>
-        <p>Scattered across .env files in subdirectories no one thinks to check.</p>
+        <h3>Env vars that silently break setup</h3>
+        <p>In .env.example but nowhere in the docs. Engineer copies the file, app fails, no idea why.</p>
       </div>
       <div class="pain-card">
         <div class="icon">🏚</div>
@@ -353,34 +412,34 @@
   <section class="how">
     <div class="section">
       <div class="section-label">How it works</div>
-      <h2>Point it at a repo. Get a setup doc.</h2>
-      <p>No configuration. No templates to fill in. DevDocs reads what's actually there.</p>
+      <h2>Send your repo URL. Get a drift report in 24h.</h2>
+      <p>No setup. No access needed. We scan the config files and compare them against your existing docs.</p>
 
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>Point at your repo</h3>
-          <p>Run the CLI on any local or remote repo. Works with monorepos.</p>
+          <h3>Purchase &amp; send your repo URL</h3>
+          <p>After checkout, email your public GitHub repo URL. We'll confirm receipt.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>It scans the config</h3>
-          <p>Reads package.json, docker-compose, .env.example, runtime files — across all packages.</p>
+          <h3>We scan config vs. docs</h3>
+          <p>docker-compose, .env.example, package.json scripts — compared against your README and CONTRIBUTING.md.</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>Get a ready-to-use doc</h3>
-          <p>A clean markdown setup guide, accurate to what's actually in the codebase right now.</p>
+          <h3>Get a markdown report</h3>
+          <p>File:line evidence, confidence score, proposed patch, and reviewer action per conflict. Ready to act on or drop into a PR.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- EXAMPLE -->
+  <!-- ONBOARDING DOC EXAMPLE -->
   <section class="section">
-    <div class="section-label">Real output</div>
+    <div class="section-label">Full package output</div>
     <h2>Ran it on Medusa — a 200+ package monorepo.</h2>
-    <p>Detected 24 env vars across 6 nested .env.example files, 12 per-package start commands, and the correct Node runtime version. In seconds.</p>
+    <p>Full package includes a complete generated onboarding doc alongside the drift report — accurate to the actual codebase, ready to drop into your wiki.</p>
 
     <div class="output-wrap">
       <div class="output-bar">
@@ -417,82 +476,27 @@ Copy <span class="key">.env.example</span> to <span class="key">.env</span> and 
     </div>
   </section>
 
-  <!-- DRIFT EXAMPLE -->
-  <section class="how">
-    <div class="section">
-      <div class="section-label">Drift Report output</div>
-      <h2>Ran it on Documenso — 94 env vars in config, 2 in the docs.</h2>
-      <p>Every undocumented variable categorised, with file:line references and a proposed patch. New engineers stop hitting silent failures.</p>
-
-      <div class="output-wrap" style="margin-top: 40px;">
-        <div class="output-bar">
-          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-          <span class="output-filename">documenso-drift.md</span>
-        </div>
-        <div class="output-body"><span class="comment">> Config files scanned: `package.json`, `.env.example`</span>
-<span class="comment">> Docs checked: `README.md`, `CONTRIBUTING.md`</span>
-<span class="comment">> Commit: `187b612` · Generated: 2026-06-23</span>
-
-<span class="bullet">2 conflict(s) found.</span>
-
-<span class="h2">## 1. Env Vars  [HIGH confidence]</span>
-
-<span class="comment">① Source implies</span>
-<span class="key">`.env.example:2-221`</span> defines <span class="key">94 vars</span>. Local-required: PORT. Secrets: 30. Unclassified: 63.
-
-<span class="comment">② Doc says</span>
-<span class="key">`CONTRIBUTING.md:69-76`</span> mentions <span class="bullet">2 var(s)</span>: README, SMTP
-
-<span class="comment">③ Why it matters</span>
-64 vars likely needed for local setup are undocumented.
-New engineer cloning this repo will hit failures with no idea why.
-
-<span class="comment">④ Proposed patch</span>
-Required for local dev — add to Environment Setup:
-  <span class="bullet">PORT</span>
-  <span class="bullet">NEXT_PRIVATE_DATABASE_URL</span>
-  <span class="bullet">NEXT_PRIVATE_REDIS_URL</span>
-  <span class="bullet">NEXT_PRIVATE_SMTP_HOST</span>
-  <span class="bullet">NEXT_PUBLIC_WEBAPP_URL</span>
-  <span class="comment">  ... 59 more vars categorised</span>
-
-<span class="h2">## 2. Start Command  [MEDIUM confidence]</span>
-
-<span class="comment">① Source implies</span>
-<span class="key">`package.json`</span> defines: <span class="key">npm run dev</span>, <span class="key">npm run start</span>
-
-<span class="comment">② Doc says</span>
-<span class="key">`CONTRIBUTING.md:69-76`</span> instructs: <span class="bullet">npm run d</span>
-
-<span class="comment">③ Why it matters</span>
-Documented command is stale or a wrapper — engineer may run the wrong thing.
-
-<span class="comment">④ Proposed patch — update Running section to:</span>
-  <span class="key">npm run dev</span>
-
-<span class="comment">Reviewer action: Accept patch · Mark intentional · Ignore with reason</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WAITLIST -->
+  <!-- PRICING -->
   <section class="waitlist" id="waitlist">
     <div class="waitlist-inner">
-      <h2>Run it on your repo</h2>
-      <p>Send your repo URL after purchase. Report delivered within 24 hours.</p>
+      <h2>Get a setup drift report</h2>
+      <p>Send your repo URL after purchase. We scan, you get a markdown report within 24 hours.</p>
+
+      <div class="flow-line">repo URL → scan → <span>markdown report</span> → optional PR-style patch</div>
 
       <div class="pricing-grid">
         <div class="pricing-card">
           <div class="pricing-label">Drift Report</div>
           <div class="pricing-price">$29</div>
           <ul class="pricing-features">
-            <li>Env vars in config but missing from docs</li>
-            <li>Services defined but never mentioned</li>
+            <li>Services in docker-compose but missing from docs</li>
+            <li>Env vars required locally but undocumented</li>
             <li>Start commands that don't match README</li>
             <li>File + line references for every conflict</li>
-            <li>Proposed patch + reviewer action per issue</li>
+            <li>Confidence score + proposed patch per issue</li>
+            <li>Reviewer action: accept / intentional / ignore</li>
           </ul>
-          <a href="https://samvegtech.gumroad.com/l/ywich" class="buy-btn" target="_blank">Buy — $29</a>
+          <a href="https://samvegtech.gumroad.com/l/ywich" class="buy-btn" target="_blank">Get drift report — $29</a>
           <span class="pricing-sub">Delivered in 24h · Public repos</span>
         </div>
 
@@ -507,7 +511,7 @@ Documented command is stale or a wrapper — engineer may run the wrong thing.
             <li>Ready to drop into your wiki today</li>
             <li>1 revision if you want changes</li>
           </ul>
-          <a href="https://samvegtech.gumroad.com/l/ntcgjj" class="buy-btn buy-btn--featured" target="_blank">Buy — $49</a>
+          <a href="https://samvegtech.gumroad.com/l/ntcgjj" class="buy-btn buy-btn--featured" target="_blank">Get full package — $49</a>
           <span class="pricing-sub">Delivered in 24h · Public repos</span>
         </div>
       </div>
