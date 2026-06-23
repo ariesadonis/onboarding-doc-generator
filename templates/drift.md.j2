@@ -1,0 +1,37 @@
+# {{ repo_name }} — Drift Report
+
+> **Trust trail** · Scanned: `{{ sources_scanned | join("`, `") }}`
+> Docs checked: `{{ doc_sources | join("`, `") or "none found" }}`
+> Generated: {{ generated_at }} · Commit: `{{ commit_hash }}`
+
+{% if not drift_items %}
+No drift detected between config files and existing docs.
+{% else %}
+**{{ drift_items | length }} conflict(s) found.**
+
+---
+{% for item in drift_items %}
+## {{ loop.index }}. {{ item.category | replace("_", " ") | title }}
+
+**① Source files imply**
+{{ item.source_implies }}
+
+**② Current doc says**
+{{ item.doc_says }}
+
+**③ Exact drift / conflict**
+{{ item.conflict }}
+
+**④ Proposed patch**
+{{ item.proposed_patch }}
+
+**⑤ Confidence:** {{ item.confidence | upper }}
+{% if item.unchecked %}
+**Unchecked assumptions:** {{ item.unchecked | join(", ") }} — these vars likely need real values; tool cannot verify.
+{% endif %}
+
+---
+{% endfor %}
+{% endif %}
+
+*Re-run with `--drift` after config changes to catch new gaps.*

@@ -16,6 +16,7 @@ from parsers import (
     parse_dependencies,
     parse_env_setup,
 )
+from drift import run_drift
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 CLONE_TIMEOUT_SECONDS = 60
@@ -126,16 +127,40 @@ def generate_doc(repo_path: Path, repo_name: str) -> str:
     )
 
 
+def generate_drift_report(repo_path: Path, repo_name: str) -> str:
+    dependencies = parse_dependencies(repo_path)
+    env_setup = parse_env_setup(repo_path)
+    commit_hash = get_commit_hash(repo_path)
+    sources_scanned = _collect_sources(repo_path, env_setup, dependencies)
+    doc_claims, drift_items = run_drift(repo_path, env_setup, dependencies)
+
+    env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
+    template = env.get_template("drift.md.j2")
+
+    return template.render(
+        repo_name=repo_name,
+        commit_hash=commit_hash,
+        generated_at=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        sources_scanned=sources_scanned,
+        doc_sources=doc_claims.source_files,
+        drift_items=drift_items,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate an onboarding doc from a repo.")
     parser.add_argument("repo", help="Git URL or local path to the repo")
     parser.add_argument("-o", "--output", default="onboarding.md", help="Output file path")
     parser.add_argument("-b", "--branch", default=None, help="Branch to clone (default: repo's default branch)")
+    parser.add_argument("--drift", action="store_true", help="Run drift detection instead of generating a new doc")
     args = parser.parse_args()
 
     if not args.repo.strip():
         print("Error: repo argument cannot be empty.", file=sys.stderr)
         sys.exit(1)
+
+    if args.drift and args.output == "onboarding.md":
+        args.output = "drift-report.md"
 
     output_path = Path(args.output)
     validate_output_path(output_path)
@@ -146,13 +171,16 @@ def main():
         with tempfile.TemporaryDirectory() as tmpdir:
             clone_dest = Path(tmpdir) / "repo"
             repo_path = clone_repo(args.repo, clone_dest, branch=args.branch)
-            doc = generate_doc(repo_path, repo_name)
+            if args.drift:
+                doc = generate_drift_report(repo_path, repo_name)
+            else:
+                doc = generate_doc(repo_path, repo_name)
     except Exception as exc:
         print(f"Error: failed to generate onboarding doc: {exc}", file=sys.stderr)
         sys.exit(1)
 
     output_path.write_text(doc)
-    print(f"Onboarding doc written to {output_path}")
+    print(f"{'Drift report' if args.drift else 'Onboarding doc'} written to {output_path}")
 
 
 if __name__ == "__main__":
