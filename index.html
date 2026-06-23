@@ -417,6 +417,64 @@ Copy <span class="key">.env.example</span> to <span class="key">.env</span> and 
     </div>
   </section>
 
+  <!-- DRIFT EXAMPLE -->
+  <section class="how">
+    <div class="section">
+      <div class="section-label">Drift Report output</div>
+      <h2>Ran it on Documenso — 94 env vars in config, 2 in the docs.</h2>
+      <p>Every undocumented variable categorised, with file:line references and a proposed patch. New engineers stop hitting silent failures.</p>
+
+      <div class="output-wrap" style="margin-top: 40px;">
+        <div class="output-bar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <span class="output-filename">documenso-drift.md</span>
+        </div>
+        <div class="output-body"><span class="comment">> Config files scanned: `package.json`, `.env.example`</span>
+<span class="comment">> Docs checked: `README.md`, `CONTRIBUTING.md`</span>
+<span class="comment">> Commit: `187b612` · Generated: 2026-06-23</span>
+
+<span class="bullet">2 conflict(s) found.</span>
+
+<span class="h2">## 1. Env Vars  [HIGH confidence]</span>
+
+<span class="comment">① Source implies</span>
+<span class="key">`.env.example:2-221`</span> defines <span class="key">94 vars</span>. Local-required: PORT. Secrets: 30. Unclassified: 63.
+
+<span class="comment">② Doc says</span>
+<span class="key">`CONTRIBUTING.md:69-76`</span> mentions <span class="bullet">2 var(s)</span>: README, SMTP
+
+<span class="comment">③ Why it matters</span>
+64 vars likely needed for local setup are undocumented.
+New engineer cloning this repo will hit failures with no idea why.
+
+<span class="comment">④ Proposed patch</span>
+Required for local dev — add to Environment Setup:
+  <span class="bullet">PORT</span>
+  <span class="bullet">NEXT_PRIVATE_DATABASE_URL</span>
+  <span class="bullet">NEXT_PRIVATE_REDIS_URL</span>
+  <span class="bullet">NEXT_PRIVATE_SMTP_HOST</span>
+  <span class="bullet">NEXT_PUBLIC_WEBAPP_URL</span>
+  <span class="comment">  ... 59 more vars categorised</span>
+
+<span class="h2">## 2. Start Command  [MEDIUM confidence]</span>
+
+<span class="comment">① Source implies</span>
+<span class="key">`package.json`</span> defines: <span class="key">npm run dev</span>, <span class="key">npm run start</span>
+
+<span class="comment">② Doc says</span>
+<span class="key">`CONTRIBUTING.md:69-76`</span> instructs: <span class="bullet">npm run d</span>
+
+<span class="comment">③ Why it matters</span>
+Documented command is stale or a wrapper — engineer may run the wrong thing.
+
+<span class="comment">④ Proposed patch — update Running section to:</span>
+  <span class="key">npm run dev</span>
+
+<span class="comment">Reviewer action: Accept patch · Mark intentional · Ignore with reason</span></div>
+      </div>
+    </div>
+  </section>
+
   <!-- WAITLIST -->
   <section class="waitlist" id="waitlist">
     <div class="waitlist-inner">
