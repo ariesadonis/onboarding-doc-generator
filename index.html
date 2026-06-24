@@ -302,6 +302,28 @@
     }
     .pricing-note a { color: #4f8ef7; }
 
+    /* FAQ */
+    .faq { border-top: 1px solid #1a1a1a; }
+    .faq-list { margin-top: 36px; display: flex; flex-direction: column; gap: 0; }
+    .faq-item {
+      border-bottom: 1px solid #1e1e1e;
+      padding: 22px 0;
+    }
+    .faq-item:first-child { border-top: 1px solid #1e1e1e; }
+    .faq-q {
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .faq-a {
+      font-size: 0.88rem;
+      color: #777;
+      max-width: 620px;
+      line-height: 1.7;
+    }
+    .faq-a a { color: #4f8ef7; }
+
     /* FOOTER */
     footer {
       text-align: center;
@@ -530,6 +552,43 @@ Copy <span class="key">.env.example</span> to <span class="key">.env</span> and 
       </div>
 
       <p class="pricing-note">Private repo? Email <a href="mailto:samveg@metronometech.com">samveg@metronometech.com</a> before purchasing.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq">
+    <div class="section-label">FAQ</div>
+    <h2>Common questions</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">How do I know if my docs have drifted?</div>
+        <div class="faq-a">You probably don't — that's the problem. Drift happens silently every time config changes without a corresponding doc update. The only way to know is to compare them directly, which is what the scan does.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can't I just do this myself?</div>
+        <div class="faq-a">You can. It takes 1–2 hours per repo: manually cross-referencing docker-compose, .env.example, and package.json scripts against your README and CONTRIBUTING.md. The scan does it in seconds and delivers a structured report with file:line evidence and proposed patches.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if a finding is wrong?</div>
+        <div class="faq-a">Every conflict comes with a reviewer action: Accept patch · Mark intentional · Map to deployment-only · Ignore with reason. You decide what's real. The report is evidence, not a mandate.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do you need access to my repo?</div>
+        <div class="faq-a">No. The scan works on public GitHub repos — just the URL. For private repos, <a href="mailto:samveg@metronometech.com">email first</a>.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What format is the report?</div>
+        <div class="faq-a">Markdown. Ready to paste into a GitHub issue, drop into a PR, or add to your wiki. No PDF, no dashboard login.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if my repo has no drift?</div>
+        <div class="faq-a">You get the report confirming that — with the trust trail showing exactly what was scanned. Good to know, and useful as a baseline before the next config change.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Who is this for?</div>
+        <div class="faq-a">Eng leads, platform teams, and DevRel at companies where broken local setup costs support time, slows new hires, or blocks contributor adoption. Not for hobby projects with no onboarding cost.</div>
+      </div>
     </div>
   </section>
 
