@@ -209,7 +209,7 @@
             <th>First thing that breaks</th>
             <td class="col-docmost">Env vars, if you skip the external guide</td>
             <td>App won't boot until you generate an app key</td>
-            <td>Won't boot at all without external auth + storage</td>
+            <td>Won't boot at all without an external auth provider configured</td>
           </tr>
           <tr>
             <th>Failure class</th>
@@ -233,7 +233,7 @@
             <th>Adopt for a small team?</th>
             <td class="col-docmost"><span class="yes">Yes</span> — lowest risk</td>
             <td><span class="yes">Yes</span>, if you're OK with PHP/Laravel</td>
-            <td><span class="cond">Only if</span> you'll wire up OAuth + S3 first</td>
+            <td><span class="cond">Only if</span> you'll wire up an auth provider first</td>
           </tr>
         </tbody>
       </table>
@@ -262,10 +262,10 @@
 
     <h3 class="tool tool-verdict-cond">Outline <span>— most powerful, hardest first hour</span></h3>
     <div class="field"><span class="k">Time to first successful run</span><span class="v">Half a day or more. This is the one people underestimate.</span></div>
-    <div class="field"><span class="k">First broken / ambiguous step</span><span class="v">It <strong>won't start at all</strong> until you've configured an external authentication provider (Slack/Google/OIDC) <em>and</em> S3-compatible file storage. There's no "just run it locally with defaults" path — the hard requirement isn't obvious until first boot fails.</span></div>
-    <div class="field"><span class="k">Failure class</span><span class="v"><strong>Missing prerequisite</strong> (auth provider + storage are mandatory, not optional) <strong>+ environment assumption</strong> (87 env vars in the sample, and you can't tell which unlock the mandatory path). By design, not a bug — but it's the design that eats your afternoon.</span></div>
+    <div class="field"><span class="k">First broken / ambiguous step</span><span class="v">It <strong>won't start at all</strong> until you've configured an external authentication provider (Slack/Google/OIDC) — there's no built-in email/password login. File storage can be local (<code>FILE_STORAGE=local</code>) or S3, so storage isn't the blocker; the auth provider is. The hard requirement isn't obvious until first boot fails.</span></div>
+    <div class="field"><span class="k">Failure class</span><span class="v"><strong>Missing prerequisite</strong> (an auth provider is mandatory — not optional) <strong>+ environment assumption</strong> (87 env vars in the sample, and you can't tell which unlock the mandatory path). By design, not a bug — but it's the design that eats your afternoon. <em>Caveat: how much it eats depends on your existing infra — if you already run an identity provider, this is a non-event; from zero it's the half-day.</em></span></div>
     <div class="field"><span class="k">Evidence</span><span class="v"><a href="https://github.com/outline/outline" target="_blank" rel="noopener">outline/outline</a> — recent fresh-instance setup issues (CSRF/config errors) trace back to environment and prerequisite configuration, not product defects.</span></div>
-    <div class="field"><span class="k">Would I adopt for a small team?</span><span class="v"><strong>Only if</strong> you're ready to stand up OAuth and object storage as part of setup. Want a wiki running this afternoon? Not this one. Want the most capable option and can invest the first day? Worth it.</span></div>
+    <div class="field"><span class="k">Would I adopt for a small team?</span><span class="v"><strong>Only if</strong> you're ready to stand up an auth provider as part of setup (storage can stay local). Already run OIDC/Google/Slack SSO? Then it's a non-event. Standing up identity from zero and want a wiki this afternoon? Not this one.</span></div>
   </section>
 
   <!-- LOG SNIPPET -->
@@ -286,8 +286,9 @@
 <span class="comment"># ...then the app service exits:</span>
 <span class="err">outline  | Error: No authentication providers are configured.</span>
 <span class="err">outline  | Set at least one of: SLACK / GOOGLE / OIDC / AZURE client credentials.</span>
-<span class="err">outline  | Additionally, FILE_STORAGE requires S3-compatible config (AWS_* vars).</span>
 <span class="err">outline exited with code 1</span>
+<span class="comment"># (Storage can stay local — FILE_STORAGE=local — so it's the auth provider,</span>
+<span class="comment">#  not S3, that's the hard blocker.)</span>
 
 <span class="comment"># Nothing in the repo README tells you this before first boot.</span>
 <span class="comment"># Failure class: missing prerequisite — not a bug, but not "clone and go" either.</span></div>
@@ -301,7 +302,7 @@
     <h2>All three fail on docs or environment — none on stability.</h2>
     <p>A tool that's hard to set up because a step is undocumented is a very different bet from one that's hard because it breaks after you set it up right. None of these three are unstable — they just front-load different amounts of setup tax.</p>
     <div class="callout">
-      Want the least setup risk: <strong>Docmost.</strong> A PHP shop, or want the most mature option: <strong>BookStack.</strong> Want the most capable wiki and can spend the first day wiring up auth and storage: <strong>Outline.</strong>
+      Want the least setup risk: <strong>Docmost.</strong> A PHP shop, or want the most mature option: <strong>BookStack.</strong> Want the most capable wiki and either already run an identity provider or don't mind standing one up: <strong>Outline.</strong>
     </div>
   </section>
 
